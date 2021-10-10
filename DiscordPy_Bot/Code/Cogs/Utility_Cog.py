@@ -3,6 +3,7 @@ from DiscordPy_Bot.Code.MainClient import client
 
 
 class Utility_Cog(commands.Cog):
+    """This is the utility cog"""
     def __init__(self, bot):
         self.bot = bot
 

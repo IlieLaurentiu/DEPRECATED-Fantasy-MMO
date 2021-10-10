@@ -1,42 +1,36 @@
 import discord
 from discord.ext import commands
-from DiscordPy_Bot.Code.MainClient import categoryFields
-from DiscordPy_Bot.Code.HelpRegistry import *
+
+
+class MyNewHelp(commands.MinimalHelpCommand):
+    async def send_pages(self):
+        destination = self.get_destination()
+        for page in self.paginator.pages:
+            helpEmbed = discord.Embed(description=page)
+            await destination.send(embed=helpEmbed)
+
+    def add_bot_commands_formatting(self, commands, heading):
+        if commands:
+            # U+2002 Middle Dot
+            joined = '\u2002'.join(c.name for c in commands)
+            if heading.endswith("_Cog"):
+                self.paginator.add_line(f'**{heading[:-4]}**')
+            else:
+                self.paginator.add_line(f'**{heading}**')
+
+            self.paginator.add_line(joined)
 
 
 class Help_Cog(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
-
-    RegisterCategory(commands.Cog.__name__)
+        self._original_help_command = bot.help_command
+        bot.help_command = MyNewHelp()
+        bot.help_command.cog = self
 
     @commands.Cog.listener()
     async def on_ready(self):
         pass
 
-    @commands.command()
-    async def Help(self, ctx):
-        RegisterCommand(self.__name__)
-        if category is not None and command is None:
-            CategoryHelp()
-        elif category is None and command is not None:
-            CommandHelp()
-        elif category is not None and command is not None:
-            CommandHelp()
-        elif category is None and command is None:
 
-            embedVar = discord.Embed(title="Commands",
-                                     description="Prefix: **mmo** \n For more info: **mmo help [command/category]**",
-                                     color=0x00ff00)
-
-            for field in categoryFields:
-                embedVar.add_field(name=field, value="a", inline=False)
-            await ctx.channel.send(embed=embedVar)
-
-
-# register category
-# register command using __name__
-# tell difference between the two
-# make embed value list of category commands
 def setup(bot):
     bot.add_cog(Help_Cog(bot))
