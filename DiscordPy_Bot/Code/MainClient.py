@@ -1,17 +1,24 @@
 import os
-import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+import sqlite3
 
-categoryCommand = []
-helpCategories = []
-categoryNum = 0
-defaultPrefix = 'mmo '
-
+groups = []
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 client = commands.Bot(command_prefix='mmo ', description=None, case_insensitive=True)
+
+# Sqlite3 DB
+connection = sqlite3.connect("E:/Programare/theMMORPG_Bot/MMORPG-Bot/DiscordPy_Bot/Database/PlayerList.db")
+cursor = connection.cursor()
+#cursor.execute("""CREATE TABLE Players (
+#                PlayerName text,
+#                PlayerID text
+#                Whitelisted integer
+#                )""")
+
+connection.commit()
 
 
 @client.event
@@ -53,6 +60,5 @@ for filename in os.listdir('./Cogs'):
     if filename.endswith('.py'):
         client.load_extension(f'Cogs.{filename[:-3]}')
         print(f'{filename[:-3]} has loaded!')
-        helpCategories.append(str(filename[:-7]))
 
 client.run(TOKEN)

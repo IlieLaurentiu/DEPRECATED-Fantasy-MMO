@@ -1,24 +1,34 @@
 import discord
 from discord.ext import commands
+from DiscordPy_Bot.Code.MainClient import groups
+
+attributes = {
+    'name': "hell",
+    'aliases': ["help", "helps"],
+    'cooldown': commands.Cooldown(2, 5.0, commands.BucketType.user)
+}
+
+help_object = commands.MinimalHelpCommand(command_attrs=attributes)
 
 
 class MyNewHelp(commands.MinimalHelpCommand):
-    async def send_pages(self):
-        destination = self.get_destination()
-        for page in self.paginator.pages:
-            helpEmbed = discord.Embed(description=page)
-            await destination.send(embed=helpEmbed)
+    def get_command_signature(self, command):
+        return '{0.clean_prefix}{1.qualified_name} {1.signature}'.format(self, command)
 
-    def add_bot_commands_formatting(self, commands, heading):
-        if commands:
-            # U+2002 Middle Dot
-            joined = '\u2002'.join(c.name for c in commands)
-            if heading.endswith("_Cog"):
-                self.paginator.add_line(f'**{heading[:-4]}**')
-            else:
-                self.paginator.add_line(f'**{heading}**')
+    # !help
+    async def send_bot_help(self, mapping):
+        embed = discord.Embed(title='Help')
+        for groupName in groups:
+            embed.add_field(name=f'**{groupName}**', value="a", inline=False)
+        await self.context.send(embed=embed)
 
-            self.paginator.add_line(joined)
+    # !help <command>
+    async def send_command_help(self, command):
+        await self.context.send("This is help command")
+
+    # !help <group>
+    async def send_group_help(self, group):
+        await self.context.send("This is help group")
 
 
 class Help_Cog(commands.Cog):
