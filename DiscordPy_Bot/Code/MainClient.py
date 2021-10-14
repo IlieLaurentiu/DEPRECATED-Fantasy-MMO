@@ -1,24 +1,49 @@
 import os
+import discord
+import sqlite3
 from discord.ext import commands
 from dotenv import load_dotenv
-import sqlite3
 
 groups = []
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+prefix = 'mmo '
+no_whitelistCommands = [f'{prefix}start', f'{prefix}help']
 
-client = commands.Bot(command_prefix='mmo ', description=None, case_insensitive=True)
+client = commands.Bot(command_prefix=prefix, description=None, case_insensitive=True)
 
 # Sqlite3 DB
 connection = sqlite3.connect("E:/Programare/theMMORPG_Bot/MMORPG-Bot/DiscordPy_Bot/Database/PlayerList.db")
 cursor = connection.cursor()
-#cursor.execute("""CREATE TABLE Players (
+# cursor.execute("""CREATE TABLE Players (
 #                PlayerName text,
-#                PlayerID text
-#                Whitelisted integer
+#                PlayerID integer
 #                )""")
-
 connection.commit()
+
+
+@client.check_once
+async def whitelist(ctx):
+
+    # if the message is in no_whitelistCommands, don't check
+    if str(ctx.message.content) in no_whitelistCommands:
+        return ctx.message.author.id
+    elif str(ctx.message.content) not in no_whitelistCommands:
+        try:
+            # if the command isn't that, check if the player is whitelisted.
+            cursor.execute(f'SELECT * FROM Players WHERE PlayerID == {ctx.message.author.id}')
+            isWhitelisted = cursor.fetchone()
+            connection.commit()
+            return isWhitelisted[1] == ctx.message.author.id
+        except TypeError:
+            # if the player is not whitelisted send embed error
+
+            whitelistError = discord.Embed(title='Error',
+                                               description='You need to type **mmo start** in order to be able to use '
+                                                           'other commands.')
+            whitelistError.set_author(name=ctx.message.author, icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=whitelistError)
+
 
 
 @client.event

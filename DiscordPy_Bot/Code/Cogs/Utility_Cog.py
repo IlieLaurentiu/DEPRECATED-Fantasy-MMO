@@ -1,5 +1,5 @@
 from discord.ext import commands
-from DiscordPy_Bot.Code.MainClient import client
+from DiscordPy_Bot.Code.MainClient import client, cursor
 
 
 class Utility_Cog(commands.Cog):
@@ -10,6 +10,11 @@ class Utility_Cog(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         pass
+
+    @commands.command()
+    @commands.is_owner()
+    async def dbtoconsole(self):
+        print(cursor.fetchall())
 
     @commands.command()
     async def ping(self, ctx):
