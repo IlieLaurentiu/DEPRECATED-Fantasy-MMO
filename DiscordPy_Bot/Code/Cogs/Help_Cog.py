@@ -15,18 +15,20 @@ class MyNewHelp(commands.MinimalHelpCommand):
     def get_command_signature(self, command):
         return '{0.clean_prefix}{1.qualified_name} {1.signature}'.format(self, command)
 
-    # !help
+    # mmo help
     async def send_bot_help(self, mapping):
-        embed = discord.Embed(title='Help')
+        embed = discord.Embed(title='Help', description='For more info on a category, use **mmo** help `<category>`'
+                                                        '\nFor more info on a command use **mmo** help `<command>`')
         for groupName in groups:
             embed.add_field(name=f'**{groupName}**', value="a", inline=False)
         await self.context.send(embed=embed)
 
-    # !help <command>
+    # mmo help <command>
     async def send_command_help(self, command):
-        await self.context.send("This is help command")
+        embedCommandHelp = discord.Embed(title=str(command) + " command:", description=command.short_doc)
+        await self.context.send(embed=embedCommandHelp)
 
-    # !help <group>
+    # mmo help <group>
     async def send_group_help(self, group):
         await self.context.send("This is help group")
 
