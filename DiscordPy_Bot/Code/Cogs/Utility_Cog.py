@@ -16,19 +16,22 @@ class Utility_Cog(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def Stats(self, ctx):
+        client.guildCount = 0
+
         for guild in client.guilds:
             client.guildCount += 1
             print(guild.name)
+
         statsEmbed = discord.Embed(name='Bot Stats:', description='Displays all the stats of the bot', color=0x00ff00)
         statsEmbed.set_author(name=ctx.message.author, icon_url=ctx.author.avatar_url)
-        statsEmbed.add_field(name='Guild Count:', value=client.guildCount, inline=True)
+        statsEmbed.add_field(name='Guild Count:', value=str(client.guildCount), inline=False)
+        statsEmbed.add_field(name='Ping', value=f'Current ping is: `{round(client.latency * 1000)}`ms', inline=True)
         await ctx.send(embed=statsEmbed)
 
     @commands.command()
     @commands.is_owner()
     async def dbtoconsole(self, ctx):
         cursor.execute(f'SELECT * FROM Players')
-        connection.commit()
         print(cursor.fetchall())
 
     @commands.command()
@@ -37,10 +40,6 @@ class Utility_Cog(commands.Cog):
         cursor.execute('DROP TABLE Players')
         connection.commit()
         print(cursor.fetchall())
-
-    @commands.command()
-    async def ping(self, ctx):
-        await ctx.send(f'Current ping is: {round(client.latency * 1000)}ms')
 
 
 def setup(bot):

@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from DiscordPy_Bot.Code.MainClient import groups
 
 attributes = {
     'name': "hell",
@@ -19,8 +18,7 @@ class MyNewHelp(commands.MinimalHelpCommand):
     async def send_bot_help(self, mapping):
         embed = discord.Embed(title='Help', description='For more info on a category, use **mmo** help `<category>`'
                                                         '\nFor more info on a command use **mmo** help `<command>`')
-        for groupName in groups:
-            embed.add_field(name=f'**{groupName}**', value="a", inline=False)
+
         await self.context.send(embed=embed)
 
     # mmo help <command>
